@@ -64,7 +64,7 @@ def send_results(
     auto_import=True
 ):
     """
-    Uploads the Phoenix-format JSON file to the /v1/import/assets/file/translate endpoint,
+    Uploads the Phoenix-format JSON directly to the /v1/import/assets endpoint,
     using a time-limited Bearer token for authentication.
 
     :param file_path: Path to the Phoenix-format JSON file
@@ -84,32 +84,36 @@ def send_results(
         return
 
     # Final import endpoint
-    import_url = f"{base_url}/v1/import/assets/file/translate"
-    print(f"\nSending file to Phoenix: {import_url}")
+    import_url = f"{base_url}/v1/import/assets"
+    print(f"\nSending data to Phoenix: {import_url}")
 
     headers = {
-        'Authorization': f'Bearer {token}'
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
     }
-    files = {
-        'file': (file_path, open(file_path, 'rb'), 'application/octet-stream')
-    }
-    data = {
+
+    # Read the JSON file content
+    with open(file_path, 'r') as f:
+        json_data = json.load(f)
+
+    # Prepare the payload
+    payload = {
         'scanType': scan_type,
         'assessmentName': assessment_name,
         'importType': import_type,
         'scanTarget': scan_target if scan_target else '',
-        'autoImport': 'true' if auto_import else 'false'
+        'autoImport': auto_import,
+        'data': json_data
     }
 
-    response = requests.post(import_url, headers=headers, files=files, data=data)
-    files['file'][1].close()  # close the file handle
+    response = requests.post(import_url, headers=headers, json=payload)
 
     if response.status_code in [200, 201]:
-        print("File upload successful.")
+        print("Data upload successful.")
     elif response.status_code == 401:
         print("401 Unauthorized. Token may have expired or credentials invalid.")
     else:
-        print(f"Error uploading file: {response.status_code}")
+        print(f"Error uploading data: {response.status_code}")
 
     try:
         print("Response JSON:", response.json())
@@ -269,29 +273,7 @@ def check_vulnerabilities_in_file(file_content):
 #################################
 def generate_phoenix_format(findings):
     """
-    Converts the scanner's 'findings' into Phoenix's JSON structure:
-    {
-        "importType": "merge",
-        "assessment": {
-            "assetType": "BUILD",
-            "name": "TJ-Actions Vulnerability Assessment"
-        },
-        "assets": [
-            {
-              "id": "",
-              "attributes": {
-                  "repository": "...",
-                  "buildFile": "...",
-                  "dockerfile": "...",
-                  "scannerSource": "...",
-                  "origin": "..."
-              },
-              "tags": [],
-              "installedSoftware": [],
-              "findings": [...]
-            }
-        ]
-    }
+    Converts the scanner's 'findings' into Phoenix's JSON structure.
     """
     grouped_assets = {}
     for f in findings:
@@ -319,7 +301,6 @@ def generate_phoenix_format(findings):
             "location": str(f["v_location"]),
             "referenceIds": [f["v_cve"]] if f["v_cve"] else [],
             "cwes": [f["v_cwe"]] if f["v_cwe"] else [],
-            "publishedDateTime": f["v_published_datetime"] or "",
             "details": {
                 "rawDetails": f["v_details"] or ""
             }
@@ -391,7 +372,6 @@ def main():
                     "v_location": location_str,
                     "v_cve": "CVE-2025-30066",
                     "v_cwe": "CWE-506",
-                    "v_published_datetime": "",
                     "v_tags": "",
                     "v_details": details_str
                 })
@@ -413,7 +393,6 @@ def main():
         writer = csv.DictWriter(
             f_out,
             fieldnames=[
-                "a_id",
                 "at_origin",
                 "at_repository",
                 "at_build",
@@ -427,7 +406,6 @@ def main():
                 "v_location",
                 "v_cve",
                 "v_cwe",
-                "v_published_datetime",
                 "v_tags",
                 "v_details"
             ]
