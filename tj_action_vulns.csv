@@ -1,0 +1,73 @@
+a_id,at_origin,at_repository,at_build,at_dockerfile,at_scanner_source,a_tags,v_name,v_description,v_remedy,v_severity,v_location,v_cve,v_cwe,v_published_datetime,v_tags,v_details
+,github,github/workflows,.github/workflows/maliciousTJ.yml,,github/workflows/.github/workflows/maliciousTJ.yml,,Detected Vulnerability (line 23),"vulnerable code line,
+You are using version v35 which is currently compromised, it is dumping sensitive
+information, you should remove this immediately to prevent further
+compromise to your GitHub repositories.
+
+It is recommended to:
+
+1. Remove it from your actions immediately
+2. Rotate your credentials where necessary
+3. Investigate the secrets in your repositories to see if they were used maliciously
+
+You should search your organization with this rule, but also https://github.com/search?q=org%3A%3CYOURORG%3E+uses%3A+tj-actions%2F&type=code and enter your organization which will help narrow down affected repositories.
+Every version of tj-actions is compromised, all tags point to 0e58ed8 which is the compromised PR. public repos should assume they are compromised.
+It's currently unclear if the credentials were also exfiltrated to an arbitrary domain.
+
+VULNERABLE CODE: uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21b55f1510
+",Remove vulnerable references and rotate credentials (see description).,7,23,CVE-2025-30066,"CWE-74, CWE-77",,,"File: Security-Phoenix-demo/tj-actions-test/.github/workflows/maliciousTJ.yml, line 23
+Matched pattern: 'uses: tj-actions/changed-files@v35'
+Line content: '        uses: tj-actions/changed-files@v35'
+vulnerable code line,
+You are using version v35 which is currently compromised, it is dumping sensitive
+information, you should remove this immediately to prevent further
+compromise to your GitHub repositories.
+
+It is recommended to:
+
+1. Remove it from your actions immediately
+2. Rotate your credentials where necessary
+3. Investigate the secrets in your repositories to see if they were used maliciously
+
+You should search your organization with this rule, but also https://github.com/search?q=org%3A%3CYOURORG%3E+uses%3A+tj-actions%2F&type=code and enter your organization which will help narrow down affected repositories.
+Every version of tj-actions is compromised, all tags point to 0e58ed8 which is the compromised PR. public repos should assume they are compromised.
+It's currently unclear if the credentials were also exfiltrated to an arbitrary domain.
+
+VULNERABLE CODE: uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21b55f1510
+"
+,github,github/workflows,.github/workflows/maliciousTJ.yml,,github/workflows/.github/workflows/maliciousTJ.yml,,Detected Vulnerability (line 25),"vulnerable code line,
+You are using version v1.1.3 which is currently compromised, it is dumping sensitive
+information, you should remove this immediately to prevent further
+compromise to your GitHub repositories.
+
+It is recommended to:
+
+1. Remove it from your actions immediately
+2. Rotate your credentials where necessary
+3. Investigate the secrets in your repositories to see if they were used maliciously
+
+You should search your organization with this rule, but also https://github.com/search?q=org%3A%3CYOURORG%3E+uses%3A+tj-actions%2F&type=code and enter your organization which will help narrow down affected repositories.
+Every version of tj-actions is compromised, all tags point to 0e58ed8 which is the compromised PR. public repos should assume they are compromised.
+It's currently unclear if the credentials were also exfiltrated to an arbitrary domain.
+
+VULNERABLE CODE: uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21b55f1510
+",Remove vulnerable references and rotate credentials (see description).,7,25,CVE-2025-30066,"CWE-74, CWE-77",,,"File: Security-Phoenix-demo/tj-actions-test/.github/workflows/maliciousTJ.yml, line 25
+Matched pattern: 'uses: tj-actions/changed-files@v1.1.3'
+Line content: '        uses: tj-actions/changed-files@v1.1.3'
+vulnerable code line,
+You are using version v1.1.3 which is currently compromised, it is dumping sensitive
+information, you should remove this immediately to prevent further
+compromise to your GitHub repositories.
+
+It is recommended to:
+
+1. Remove it from your actions immediately
+2. Rotate your credentials where necessary
+3. Investigate the secrets in your repositories to see if they were used maliciously
+
+You should search your organization with this rule, but also https://github.com/search?q=org%3A%3CYOURORG%3E+uses%3A+tj-actions%2F&type=code and enter your organization which will help narrow down affected repositories.
+Every version of tj-actions is compromised, all tags point to 0e58ed8 which is the compromised PR. public repos should assume they are compromised.
+It's currently unclear if the credentials were also exfiltrated to an arbitrary domain.
+
+VULNERABLE CODE: uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21b55f1510
+"
