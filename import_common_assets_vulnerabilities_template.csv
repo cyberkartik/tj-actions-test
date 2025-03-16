@@ -5,7 +5,7 @@ a_id,at_origin,at_repository,at_build,at_dockerfile,at_scanner_source,a_tags,v_n
 OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
-        uses: tj-actions/changed-files@v1.1.3",Clean Code,0,,CVE-2025-30066,,,,"Line 23
+        uses: tj-actions/changed-files@v1.1.3",Clean Code,1,github/workflows/blank.yml:23,CVE-2025-30066,,,,"Line 23
 
  uses: tj-actions/changed-files@v35
 OR
@@ -18,7 +18,7 @@ OR
 OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
-        uses: tj-actions/changed-files@v1.1.3",Clean Code,0,,CVE-2025-30066,,,,"Line 62
+        uses: tj-actions/changed-files@v1.1.3",Clean Code,1,github/workflows/blank.yml:62,CVE-2025-30066,,,,"Line 62
 
  uses: tj-actions/changed-files@v35
 OR
@@ -31,7 +31,7 @@ OR
 OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
-        uses: tj-actions/changed-files@v1.1.3",Clean Code,0,,CVE-2025-30066,,,,"Line 28
+        uses: tj-actions/changed-files@v1.1.3",Clean Code,1,github/workflows/blank.yml:28,CVE-2025-30066,,,,"Line 28
 
  uses: tj-actions/changed-files@v35
 OR
@@ -49,7 +49,7 @@ OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
         uses: tj-actions/changed-files@v1.1.3","tj-actions changed-files before 46 allows remote attackers to discover secrets by reading actions logs. (The tags v1 through v45.0.7 were affected on 2025-03-14 and 2025-03-15 because they were modified by a threat actor to point at commit 0e58ed8, which contained malicious updateFeatures code.)
-",7,,CVE-2025-30066,,,,"VULNERABLE CODE
+",7,github/workflows/malicious.yml:100,CVE-2025-30066,,,,"VULNERABLE CODE
 
 Potentially vulnerable code FIXED
 
@@ -72,7 +72,7 @@ OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
         uses: tj-actions/changed-files@v1.1.3","tj-actions changed-files before 46 allows remote attackers to discover secrets by reading actions logs. (The tags v1 through v45.0.7 were affected on 2025-03-14 and 2025-03-15 because they were modified by a threat actor to point at commit 0e58ed8, which contained malicious updateFeatures code.)
-",7,,CVE-2025-30066,,,,"VULNERABLE CODE
+",7,github/workflows/malicious.yml:23,CVE-2025-30066,,,,"VULNERABLE CODE
 
  POTENTIALLY VULNERABLE CODE - FIXED
 
@@ -95,7 +95,7 @@ OR
         uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67
 OR
         uses: tj-actions/changed-files@v1.1.3","tj-actions changed-files before 46 allows remote attackers to discover secrets by reading actions logs. (The tags v1 through v45.0.7 were affected on 2025-03-14 and 2025-03-15 because they were modified by a threat actor to point at commit 0e58ed8, which contained malicious updateFeatures code.)
-",9.8,,CVE-2025-30066,,,,"VULNERABLE CODE
+",9.8,github/workflows/malicious.yml:24,CVE-2025-30066,,,,"VULNERABLE CODE
         uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21b55f1510
 
 

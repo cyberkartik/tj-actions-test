@@ -1,5 +1,14 @@
 Readme
 
+Please change your orgname in tj-action-search-phoenix-V2-with-upload.py and tj-action-search-phoenix-V2.py
+
+
+def search_code_in_org(org_name="Security-Phoenix-demo"):
+    """
+    Search for lines referencing 'tj-actions/changed-files'.
+    Prompts once for an organization name if it isn't set,
+    then also prompts for GITHUB_TOKEN if missing.
+    """
 
 Github Action Test script
 

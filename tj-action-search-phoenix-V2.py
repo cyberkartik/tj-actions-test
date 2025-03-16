@@ -6,12 +6,29 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 
-# Patterns considered vulnerable
-VULNERABLE_PATTERNS = [
-    "uses: tj-actions/changed-files@v35",
-    "uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67",
-    "uses: tj-actions/changed-files@v1.1.3"
-]
+##########################
+# SCANNER CONFIG & LOGIC #
+##########################
+
+# Dynamically generate vulnerable patterns for every version from v1 to v45.0.7
+VULNERABLE_PATTERNS = []
+
+# Include the known malicious SHA
+MALICIOUS_SHA = "uses: tj-actions/changed-files@0e58ed8671d6b60d0890c21b07f8835ace038e67"
+VULNERABLE_PATTERNS.append(MALICIOUS_SHA)
+
+
+# Generate patterns for versions v1.0.0 to v45.0.7
+for major in range(1, 46):
+    for minor in range(0, 8):  # Assuming minor versions go up to 7
+        for patch in range(0, 8):  # Assuming patch versions go up to 7
+            if major == 45 and minor == 0 and patch == 7:
+                VULNERABLE_PATTERNS.append("uses: tj-actions/changed-files@v45.0.7")
+            else:
+                VULNERABLE_PATTERNS.append(f"uses: tj-actions/changed-files@v{major}.{minor}.{patch}")
+
+# Remove duplicates if any
+VULNERABLE_PATTERNS = list(set(VULNERABLE_PATTERNS))
 
 def get_metadata_for_pattern(matched_pattern: str):
     """
@@ -43,9 +60,9 @@ VULNERABLE CODE: uses: tj-actions/changed-files@5e85e31a0187e8df23b438284aa04f21
     elif version == "0e58ed8671d6b60d0890c21b07f8835ace038e67":
         severity = "9.8"
     else:
-        severity = "0"
+        severity = "1"
 
-    # Final description
+    # We return a short base description here, but we can enhance further below
     description = f"vulnerable code line,\n{advisory_text}"
     return severity, description
 
@@ -136,42 +153,56 @@ def main():
             file_vulns = check_vulnerabilities_in_file(file_content)
             if file_vulns:
                 for (line_number, matched_pattern, matched_line_text) in file_vulns:
-                    severity, custom_description = get_metadata_for_pattern(matched_pattern)
+                    # Extract version
+                    version = matched_pattern.split('@')[-1].strip()
+                    severity, base_description = get_metadata_for_pattern(matched_pattern)
 
-                    # Print the file, line content, and the description with the requested spacing
+                    # Build a location string with repository/path/line
+                    location_str = f"{repo_full}/{path} (line {line_number})"
+
+                    # Enhance the vulnerability description and details with version + line text
+                    v_description = (
+                        f"Vulnerable reference to tj-actions/changed-files@{version}\n"
+                        f"Line {line_number} content:\n\n"
+                        f"    {matched_line_text}\n\n"
+                        f"{base_description}"
+                    )
+                    v_details = (
+                        f"Location: {location_str}\n"
+                        f"Vulnerable version: {version}\n"
+                        f"Line content:\n{matched_line_text}\n\n"
+                        f"Full advisory:\n{base_description}"
+                    )
+
+                    # Print the file, line content, and the description with requested spacing
                     print(f"File: {repo_full}/{path}")
                     print(f"Line: {line_number}")
                     print(f"Matched pattern: {matched_pattern}")
                     print(f"Line content: {matched_line_text}")
                     print("\n" * 5)  # 5 blank lines
                     print("=====")
-                    print(custom_description)
+                    print(base_description)
                     print()  # extra newline
 
-                    # Collect into findings
+                    # Collect into findings for CSV/JSON
                     findings.append({
                         "a_id": "",
                         "at_origin": "github",
-                        "at_repository": "github/workflows",
+                        "at_repository": repo_full,
                         "at_build": path,
                         "at_dockerfile": "",
                         "at_scanner_source": f"github/workflows/{path}",
                         "a_tags": "",
-                        "v_name": f"Detected Vulnerability (line {line_number})",
-                        "v_description": custom_description,
+                        "v_name": f"Detected Vulnerability (Line {line_number}, Version {version})",
+                        "v_description": v_description,
                         "v_remedy": "Remove vulnerable references and rotate credentials (see description).",
                         "v_severity": severity,
-                        "v_location": line_number,
+                        "v_location": location_str,
                         "v_cve": "CVE-2025-30066",
                         "v_cwe": "CWE-74, CWE-77",
                         "v_published_datetime": "",
                         "v_tags": "",
-                        "v_details": (
-                            f"File: {repo_full}/{path}, line {line_number}\n"
-                            f"Matched pattern: '{matched_pattern}'\n"
-                            f"Line content: '{matched_line_text}'\n"
-                            f"{custom_description}"
-                        )
+                        "v_details": v_details
                     })
 
     if not findings:
@@ -183,25 +214,28 @@ def main():
     # Example CSV output
     csv_file = "tj_action_vulns.csv"
     with open(csv_file, "w", newline="", encoding="utf-8") as f_out:
-        writer = csv.DictWriter(f_out, fieldnames=[
-            "a_id",
-            "at_origin",
-            "at_repository",
-            "at_build",
-            "at_dockerfile",
-            "at_scanner_source",
-            "a_tags",
-            "v_name",
-            "v_description",
-            "v_remedy",
-            "v_severity",
-            "v_location",
-            "v_cve",
-            "v_cwe",
-            "v_published_datetime",
-            "v_tags",
-            "v_details"
-        ])
+        writer = csv.DictWriter(
+            f_out,
+            fieldnames=[
+                "a_id",
+                "at_origin",
+                "at_repository",
+                "at_build",
+                "at_dockerfile",
+                "at_scanner_source",
+                "a_tags",
+                "v_name",
+                "v_description",
+                "v_remedy",
+                "v_severity",
+                "v_location",
+                "v_cve",
+                "v_cwe",
+                "v_published_datetime",
+                "v_tags",
+                "v_details"
+            ]
+        )
         writer.writeheader()
         writer.writerows(findings)
 
@@ -213,7 +247,7 @@ def main():
         json.dump(findings, jf_out, indent=4)
     print(f"JSON output saved to: {json_file}")
 
-    # If needed, you can generate Phoenix-format JSON or call send_results() here.
+    # If needed: generate Phoenix-format JSON or call send_results() here.
 
 if __name__ == "__main__":
     main()
